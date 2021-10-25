@@ -1,4 +1,4 @@
-function  theta = evi_im(theta0, tau, env_name, max_iter, master_stepsize, h, auto_corr, method)
+function  theta = evi_im(theta0, tau, env_name, max_iter, master_stepsize,auto_corr, method)
 
 %%%%%%%%
 % Energetic Variational Inference w/ Implicit Euler
@@ -17,13 +17,9 @@ function  theta = evi_im(theta0, tau, env_name, max_iter, master_stepsize, h, au
 %%%%%%%%
 
 if nargin < 5 
-    master_stepsize = 0.1; 
+    master_stepsize = 1e-2; 
 end
 
-% for the following parameters, we always use the default settings
-if nargin < 6 
-    h = .5; 
-end
 if nargin < 7 
     auto_corr = 0.9; 
 end
@@ -60,12 +56,12 @@ switch method
         m = size(theta,1)*size(theta,2);
         
         for iter = 1:max_iter
-            grad = KL_gradxy(theta, theta_old, tau, env_name, h);   %\Phi(theta)
+            grad = KL_gradxy(theta, theta_old, tau, env_name);   %\Phi(theta)
             grad_now = reshape(grad, [1,m]);
             
             p = sqrt(dot(grad_now,grad_now));
             
-            if  p < 1e-9
+            if  p < 1e-4
                 disp(iter)
                 break
             end

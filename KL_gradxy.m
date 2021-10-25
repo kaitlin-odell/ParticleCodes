@@ -10,14 +10,13 @@ function Akxy = KL_gradxy(x, x_init, tau, env_name, h)
 [n,d] = size(x);
 
 if strcmp(env_name,'star')
-    %[logp, grad_logp, Hessian_logp, inv_avg_Hessian] = star(100, 5,x);  %star gaussian mixture example
-    [~, grad_logp] = double_banana(0.0, 100.0, 1.0, 0.09, log(30),x);
+    [~, grad_logp, h] = star(100, 5,x);  %star gaussian mixture example  
 elseif strcmp(env_name, 'sine')
-    [~, grad_logp] = sine(1, 0.003,x);  %unimodal sine shape example
+    [~, grad_logp,h] = sine(1, 0.003,x);  %unimodal sine shape example
 elseif strcmp(env_name, 'double_banana')
-    [~, grad_logp] = double_banana(0.0, 100.0, 1.0, 0.09, log(30),x);  %bimodal double banana example
+    [~, grad_logp,h] = double_banana(0.0, 100.0, 1.0, 0.09, log(30),x);  %bimodal double banana example
 elseif strcmp(env_name,'banana')
-    [~, grad_logp] = banana(x);
+    [~, grad_logp,h] = banana(x);
 end
 
 %%%%%%%%%%%%%% Main part %%%%%%%%%%
@@ -37,7 +36,7 @@ end
 % 
 % obj1= -Kxy*x;
 % for i = 1:d
-%     obj1(:,i)= obj1(:,i)./sumKxy;
+%     obj1(:,i)= obj1(:,i + x(:,i)./sumKxy;
 % end
 % obj1 = obj1/h^2;
 % obj2 = dxkxy./sumKxy;
@@ -51,19 +50,16 @@ for i = 1:n
     end
 end
 
-M = sum(dif.^2, 3);
-
-kxy = exp(-M/(2*h^2))/((2*pi*h*h)^(d/2));
+kxy = exp(-sum(dif.^2, 3)/(2*h^2))/((2*pi*h*h)^(d/2));
 sumkxy = sum(kxy,2);
 gradK = zeros([n,n,d]);
 for i = 1:n
     for j = 1:n
         for k = 1:d
-            gradK(i,j,k) = dif(i,j,k)*kxy(j,i);
+            gradK(i,j,k) = -dif(i,j,k)*kxy(i, j)/h^2;
         end
     end
 end
-gradK = -gradK/h^2;
 
 dxkxy = squeeze(sum(gradK,2));
 a = zeros([n,n,d]);
@@ -77,5 +73,5 @@ end
 obj1 = squeeze(sum(a, 2));
 obj2 = dxkxy./sumkxy;
 
-Akxy = (x - x_init)/tau + (-obj2 - obj1 - grad_logp'); %Grad of J_n(x)
+Akxy = (x - x_init)/tau + obj2 + obj1  - grad_logp;  % - (-obj2 - obj1 - grad_logp'); %Grad of J_n(x)
 end
