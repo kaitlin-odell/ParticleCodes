@@ -2,9 +2,9 @@
     %Different name corresponds to different V(x) in the Fokker-Plank equation
     %The definition of V(x) can be found in environment.py
 %env_name = 'double_banana';
-env_name = 'banana';
+%env_name = 'banana';
 %env_name = 'sine';
-%env_name = 'star';
+env_name = 'star';
 
 n_particles = 150;  %number of particles
 dim = 2;            %dimension of the problem
@@ -16,8 +16,8 @@ x_evi = trainer(env_name, n_particles, outer_iter);
 %%Compute the un-normalized target distribution, only for the visualization
 ngrid = 500;
 %set the line space carefully to the region of your figure
-x = linspace(-2, 2, ngrid);  %region of x  For star: change to (-4, 4)
-y = linspace(-2, 2, ngrid);  %region of y  For star, change to (-4, 4)
+x = linspace(-4, 4, ngrid);  %region of x  For star: change to (-4, 4)
+y = linspace(-4, 4, ngrid);  %region of y  For star, change to (-4, 4)
 [X, Y] = meshgrid(x, y);
 XY = [reshape(X,[1,500^2]); reshape(Y,[1, 500^2])];
 
@@ -38,5 +38,5 @@ Z = reshape(Z, [500,500]);
 hold on
 contourf(X,Y,Z)
 scatter(x_evi(:,1),x_evi(:,2),'*')
-xlim([-2,2])
-ylim([-2,2])
+xlim([-4,4])
+ylim([-4,4])

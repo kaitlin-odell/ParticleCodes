@@ -15,18 +15,18 @@ sigma(1,:,:) = diag([1, 1/skewness]);
 inv_sigma(1,:,:) = diag([1, skewness]);
 
 for i = 2:K
-    mu(i,:) = U*mu(i-1,:);
-    sigma(i,:,:) = U*(sigma(i-1,:,:)*U');
-    inv_sigma(i,:,:) = U*(inv_sigma(i-1,:,:)*U');
+    mu(i,:) = mu(i-1,:)*U;
+    sigma(i,:,:) = U*reshape(sigma(i-1,:,:),size(U))*U';
+    inv_sigma(i,:,:) = U*reshape(inv_sigma(i-1,:,:),size(U))*U';
 end
 
-Fx = zeros(n);
-Jx = zeros(n);
+Fx = zeros(n,1);
+Jx = zeros(n,2);
 
-for i = 1:n
-    pdfi = mvnpdf(x, mu(i,:), sigma(i,:,:));
+for i = 1:K
+    pdfi = mvnpdf(x,mu(i,:), reshape(sigma(i,:,:), [2,2]));
     Fx = Fx + pdfi;
-    Jx = Jx + inv_sigma(i,:,:)*pdfi;
+    Jx = Jx + pdfi.*((mu(i,:)- x)*reshape(inv_sigma(i,:,:),[2,2]));
 end
 
 logp = log(Fx/K);
