@@ -1,8 +1,11 @@
-function Akxy = KL_gradxy(x, x_init, tau, env_name, h)
+function Akxy = KL_gradxy(x, x_init, tau, env_name)
 %%%%%%%%%%%%%%%%%%%%%%
 % Input:
 %    -- x: particles, n*d matrix, where n is the number of particles and d is the dimension of x 
-%    -- h: bandwidth.
+%    -- x_init: initial particles, n*d matrix, where n is the number of
+%    particles and d is the dimension of x
+%    -- tau: step size in implicit euler.
+%    -- env_name: name of environment to calculate logp, grad_logp, and give proper h.
 
 % Output:
 %    --Akxy: n*d matrix, Gradient of J_n(x)
@@ -66,7 +69,7 @@ a = zeros([n,n,d]);
 for i =1:n
     for j = 1:n
         for k = 1:d
-            a(j,i,k) = gradK(i,j,k)/sumkxy(i);
+            a(i,j,k) = gradK(i,j,k)/sumkxy(i);
         end
     end
 end

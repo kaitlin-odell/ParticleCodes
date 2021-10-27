@@ -1,4 +1,4 @@
-function  theta = evi_im(theta0, tau, env_name, max_iter, master_stepsize,auto_corr, method)
+function  theta = evi_im(theta0, tau, env_name, master_stepsize,auto_corr, method)
 
 %%%%%%%%
 % Energetic Variational Inference w/ Implicit Euler
@@ -16,15 +16,15 @@ function  theta = evi_im(theta0, tau, env_name, max_iter, master_stepsize,auto_c
 %   -- theta: a set of particles that approximates p(x)
 %%%%%%%%
 
-if nargin < 5 
+if nargin < 4 
     master_stepsize = 1e-2; 
 end
 
-if nargin < 7 
+if nargin < 5
     auto_corr = 0.9; 
 end
 
-if nargin < 8 
+if nargin < 6 
     method = 'gdbb'; 
 end
 
@@ -37,7 +37,7 @@ switch method
         fudge_factor = 1e-6;
         historial_grad = 0;
         
-        for iter = 1:max_iter
+        for iter = 1:5000
             grad = KL_gradxy(theta, theta0, tau, dlog_p, h);   %\Phi(theta)
             if historial_grad == 0
                 historial_grad = historial_grad + grad.^2;
@@ -52,11 +52,10 @@ switch method
         %Gradient Descent with Brazilian-Borwein Stepsize to make gradient smaller
         
         theta = theta0;
-        theta_old = theta0;
         m = size(theta,1)*size(theta,2);
         
-        for iter = 1:max_iter
-            grad = KL_gradxy(theta, theta_old, tau, env_name);   %\Phi(theta)
+        for iter = 1:5000
+            grad = KL_gradxy(theta, theta0, tau, env_name);   %\Phi(theta)
             grad_now = reshape(grad, [1,m]);
             
             p = sqrt(dot(grad_now,grad_now));
@@ -66,7 +65,7 @@ switch method
                 break
             end
             
-            step_1 = 1e-4;
+            step_1 = 1e-7;
             %compute Barzilain-Borwein(BB) Stepsize
             if iter > 1
                 y_k = grad_now - grad_old;
@@ -79,6 +78,5 @@ switch method
             theta = theta - step_1*grad;
                 
         end
-         
 end
 end

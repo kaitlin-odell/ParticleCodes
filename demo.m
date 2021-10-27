@@ -1,3 +1,4 @@
+clear;
 %Pick one toy environment to play
     %Different name corresponds to different V(x) in the Fokker-Plank equation
     %The definition of V(x) can be found in environment.py
@@ -6,9 +7,9 @@
 %env_name = 'sine';
 env_name = 'star';
 
-n_particles = 150;  %number of particles
+n_particles = 200;  %number of particles
 dim = 2;            %dimension of the problem
-outer_iter = 100;
+outer_iter = 200;
 
 x_evi = trainer(env_name, n_particles, outer_iter);
 
@@ -35,6 +36,7 @@ Z = exp(logp);
 Z = reshape(Z, [500,500]);
 
 %%%Plot the target distribution and evi particles%%%
+figure(1);
 hold on
 contourf(X,Y,Z)
 scatter(x_evi(:,1),x_evi(:,2),'*r')

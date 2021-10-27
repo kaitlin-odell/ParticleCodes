@@ -4,19 +4,12 @@ function [x_evi] = trainer(env_name, n_particles,outer_iter)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 d = 2; % dimension of problem
 tau = 1e-2; %time step for implicit 
-x = randn(n_particles,d);
+x0 = randn(n_particles,d);%Initialize x0 
+%x = [.1, .2; .5, .2; .3, .1; .6, .9; .9, .2; .32, .45; .18, .84; .23, .84; .55, .81; .71, .13];
 N = n_particles *d; %Total dimension of ODE system
 
-
-% our implicit evi algorithm %
-x0 = x; %Initialize x0
-max_iter = 20; %maximum number of iterations for evi
-% Searching best master_stepsize using a development set
-master_stepsize = 0.05;  
-
-
 for i = 1:outer_iter
-    x_evi = evi_im(x0, tau, env_name, max_iter, master_stepsize);
+    x_evi = evi_im(x0, tau, env_name);
     x0 = x_evi;
 %    scatter(x_evi(:,1),x_evi(:,2),'*')
 end
