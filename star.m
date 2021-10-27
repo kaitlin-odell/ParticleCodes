@@ -4,7 +4,7 @@ h = .1;
 
 theta = 2*pi/K;
 
-U = [cos(theta), sin(theta); -sin(theta), cos(theta)];
+U = [cos(theta), -sin(theta); sin(theta), cos(theta)];
 
 mu = zeros(K,d);
 sigma = zeros(K,d,d);
@@ -16,8 +16,8 @@ inv_sigma(1,:,:) = diag([1, skewness]);
 
 for i = 2:K
     mu(i,:) = mu(i-1,:)*U;
-    sigma(i,:,:) = U*reshape(sigma(i-1,:,:),size(U))*U';
-    inv_sigma(i,:,:) = U*reshape(inv_sigma(i-1,:,:),size(U))*U';
+    sigma(i,:,:) = U'*(reshape(sigma(i-1,:,:),size(U))*U);
+    inv_sigma(i,:,:) = U'*(reshape(inv_sigma(i-1,:,:),size(U))*U);
 end
 
 Fx = zeros(n,1);

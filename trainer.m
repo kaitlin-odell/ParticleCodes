@@ -10,7 +10,7 @@ N = n_particles *d; %Total dimension of ODE system
 
 % our implicit evi algorithm %
 x0 = x; %Initialize x0
-max_iter = 100; %maximum number of iterations for evi
+max_iter = 20; %maximum number of iterations for evi
 % Searching best master_stepsize using a development set
 master_stepsize = 0.05;  
 

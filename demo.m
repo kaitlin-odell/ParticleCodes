@@ -37,6 +37,6 @@ Z = reshape(Z, [500,500]);
 %%%Plot the target distribution and evi particles%%%
 hold on
 contourf(X,Y,Z)
-scatter(x_evi(:,1),x_evi(:,2),'*')
+scatter(x_evi(:,1),x_evi(:,2),'*r')
 xlim([-4,4])
 ylim([-4,4])
