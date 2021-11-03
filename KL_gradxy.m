@@ -13,13 +13,15 @@ function Akxy = KL_gradxy(x, x_init, tau, env_name)
 [n,d] = size(x);
 
 if strcmp(env_name,'star')
-    [~, grad_logp, h] = star(100, 5,x);  %star gaussian mixture example  
+    [~, grad_logp,h] = star(100, 5,x);  %star gaussian mixture example  
 elseif strcmp(env_name, 'sine')
     [~, grad_logp,h] = sine(1, 0.003,x);  %unimodal sine shape example
 elseif strcmp(env_name, 'double_banana')
     [~, grad_logp,h] = double_banana(0.0, 100.0, 1.0, 0.09, log(30),x);  %bimodal double banana example
 elseif strcmp(env_name,'banana')
     [~, grad_logp,h] = banana(x);
+elseif strcmp(env_name,'wave')
+    [~, grad_logp,h] = wave(x);
 end
 
 %%%%%%%%%%%%%% Main part %%%%%%%%%%
@@ -53,7 +55,7 @@ for i = 1:n
     end
 end
 
-kxy = exp(-sum(dif.^2, 3)/(2*h^2))/((2*pi*h*h)^(d/2));
+kxy = exp(-sum(dif.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2));
 sumkxy = sum(kxy,2);
 gradK = zeros([n,n,d]);
 for i = 1:n

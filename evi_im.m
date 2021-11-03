@@ -54,14 +54,13 @@ switch method
         theta = theta0;
         m = size(theta,1)*size(theta,2);
         
-        for iter = 1:5000
+        for iter = 1:100000
             grad = KL_gradxy(theta, theta0, tau, env_name);   %\Phi(theta)
             grad_now = reshape(grad, [1,m]);
             
             p = sqrt(dot(grad_now,grad_now));
             
             if  p < 1e-4
-                disp(iter)
                 break
             end
             

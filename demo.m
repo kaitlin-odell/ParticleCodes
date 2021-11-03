@@ -6,10 +6,11 @@ clear;
 %env_name = 'banana';
 %env_name = 'sine';
 env_name = 'star';
+%env_name = 'wave';
 
-n_particles = 200;  %number of particles
+n_particles = 100;  %number of particles
 dim = 2;            %dimension of the problem
-outer_iter = 200;
+outer_iter = 80;
 
 x_evi = trainer(env_name, n_particles, outer_iter);
 
@@ -17,8 +18,8 @@ x_evi = trainer(env_name, n_particles, outer_iter);
 %%Compute the un-normalized target distribution, only for the visualization
 ngrid = 500;
 %set the line space carefully to the region of your figure
-x = linspace(-4, 4, ngrid);  %region of x  For star: change to (-4, 4)
-y = linspace(-4, 4, ngrid);  %region of y  For star, change to (-4, 4)
+x = linspace(-5, 5, ngrid);  %region of x  For star: change to (-4, 4)
+y = linspace(-5, 5, ngrid);  %region of y  For star, change to (-4, 4)
 [X, Y] = meshgrid(x, y);
 XY = [reshape(X,[1,500^2]); reshape(Y,[1, 500^2])];
 
@@ -30,15 +31,17 @@ elseif strcmp(env_name, 'double_banana')
     logp = double_banana(0.0, 100.0, 1.0, 0.09, log(30),XY');  %bimodal double banana example
 elseif strcmp(env_name,'banana')
     logp = banana(XY');
+elseif strcmp(env_name,'wave')
+    logp = wave(XY');
 end
 
 Z = exp(logp);
 Z = reshape(Z, [500,500]);
 
 %%%Plot the target distribution and evi particles%%%
-figure(1);
+figure(4);
 hold on
 contourf(X,Y,Z)
 scatter(x_evi(:,1),x_evi(:,2),'*r')
-xlim([-4,4])
-ylim([-4,4])
+xlim([-5,5])
+ylim([-5,5])
