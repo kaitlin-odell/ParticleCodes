@@ -8,13 +8,16 @@ clear;
 env_name = 'star';
 %env_name = 'wave';
 
-n_particles = 100;  %number of particles
+n_particles = 100;  %number of particles (can be adjusted as desired)
 dim = 2;            %dimension of the problem
-outer_iter = 80;
+outer_iter = 80;    %number of outer iterations (can be adjusted as desired)
 
+
+%%calculates the approximated particles%%
 x_evi = trainer(env_name, n_particles, outer_iter);
 
 
+%%%Plots the target distribution with the approximated particles
 %%Compute the un-normalized target distribution, only for the visualization
 ngrid = 500;
 %set the line space carefully to the region of your figure
@@ -39,7 +42,7 @@ Z = exp(logp);
 Z = reshape(Z, [500,500]);
 
 %%%Plot the target distribution and evi particles%%%
-figure(4);
+figure(1);
 hold on
 contourf(X,Y,Z)
 scatter(x_evi(:,1),x_evi(:,2),'*r')
