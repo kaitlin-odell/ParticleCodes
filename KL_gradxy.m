@@ -25,57 +25,19 @@ elseif strcmp(env_name,'wave')
 end
 
 %%%%%%%%%%%%%% Main part %%%%%%%%%%
-% XY = x*x';
-% x2= sum(x.^2, 2);
-% X2e = repmat(x2, 1, n);
-% 
-% H = (X2e + X2e' - 2*XY); % calculate pairwise distance
-% Kxy = exp(-H/(2*h^2))/((2*pi*h*h)^(d/2));   % calculate kernel
-% 
-% sumKxy = sum(Kxy,2);
-% dxkxy= -Kxy*x;
-% for i = 1:d
-%     dxkxy(:,i)=dxkxy(:,i) + x(:,i).*sumKxy;
-% end
-% dxkxy = dxkxy/h^2;
-% 
-% obj1= -Kxy*x;
-% for i = 1:d
-%     obj1(:,i)= obj1(:,i + x(:,i)./sumKxy;
-% end
-% obj1 = obj1/h^2;
-% obj2 = dxkxy./sumKxy;
 
-dif = zeros([n,n,d]);
-for i = 1:n
-    for j = 1:n
-        for k = 1:d
-            dif(i,j,k) = x(i,k) - x(j,k);
-        end
-    end
-end
+dif = reshape(x,n,1,d) - reshape(x,1,n,d);
 
 kxy = exp(-sum(dif.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2));
+kh = kxy/h^2;
 sumkxy = sum(kxy,2);
-gradK = zeros([n,n,d]);
-for i = 1:n
-    for j = 1:n
-        for k = 1:d
-            gradK(i,j,k) = -dif(i,j,k)*kxy(i, j)/h^2;
-        end
-    end
-end
+
+gradK = -dif.*(kxy/h^2);
 
 dxkxy = squeeze(sum(gradK,2));
-a = zeros([n,n,d]);
-for i =1:n
-    for j = 1:n
-        for k = 1:d
-            a(i,j,k) = gradK(i,j,k)/sumkxy(i);
-        end
-    end
-end
-obj1 = squeeze(sum(a, 2));
+
+khs = kh./sumkxy;
+obj1 = khs*x - sum(khs,2).*x;
 obj2 = dxkxy./sumkxy;
 
 Akxy = (x - x_init)/tau + obj2 + obj1  - grad_logp;  % - (-obj2 - obj1 - grad_logp'); %Grad of J_n(x)
