@@ -1,4 +1,4 @@
-function [logp, grad_logp,h] = star(skewness, K, x)
+function [logp, grad_logp,h,Fx] = star(skewness, K, x)
 [n, d] = size(x);
 h = .1;
 

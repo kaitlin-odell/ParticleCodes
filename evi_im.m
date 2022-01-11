@@ -54,7 +54,7 @@ switch method
         theta = theta0;
         m = size(theta,1)*size(theta,2);
         
-        for iter = 1:100000
+        for iter = 1:1000
             grad = KL_gradxy(theta, theta0, tau, env_name);   %\Phi(theta)
             grad_now = reshape(grad, [1,m]);
             

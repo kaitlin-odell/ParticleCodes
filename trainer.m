@@ -1,4 +1,4 @@
-function [x_evi] = trainer(env_name, n_particles,outer_iter)
+function [x_evi,jn] = trainer(env_name, n_particles,outer_iter)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Sample code to reproduce our distribution particle results
 % Input:
@@ -16,6 +16,13 @@ N = n_particles *d; %Total dimension of ODE system
 
 for i = 1:outer_iter
     x_evi = evi_im(x0, tau, env_name);
+    
+%     if i > 1
+%         jn(i) = Jn(x_evi,x0, env_name,tau);
+%     else 
+%         jn(i) = 0;
+%     end
+    
     x0 = x_evi;
 end
 

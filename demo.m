@@ -1,4 +1,5 @@
 clear;
+tic
 %Pick one toy environment to play
     %Different name corresponds to different V(x) in the Fokker-Plank equation
     %The definition of V(x) can be found in environment.py
@@ -10,11 +11,12 @@ env_name = 'star';
 
 n_particles = 100;  %number of particles (can be adjusted as desired)
 dim = 2;            %dimension of the problem
-outer_iter = 80;    %number of outer iterations (can be adjusted as desired)
+outer_iter = 10^4;    %number of outer iterations (can be adjusted as desired)
 
 
 %%calculates the approximated particles%%
-x_evi = trainer(env_name, n_particles, outer_iter);
+[x_evi] = trainer(env_name, n_particles, outer_iter);
+toc
 
 
 %%%Plots the target distribution with the approximated particles
@@ -48,3 +50,8 @@ contourf(X,Y,Z)
 scatter(x_evi(:,1),x_evi(:,2),'*r')
 xlim([-5,5])
 ylim([-5,5])
+
+%%%Plot theorem 1%%%
+% figure(2);
+% plot(1:100,jn)
+% ylim([-6,0])

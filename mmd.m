@@ -1,9 +1,9 @@
 function  MMD = mmd(x_evi,y,N,M)
 %%%%%%%%%%%%%%%%%%%%%%
 % Input:
-%    -- x_evi: particles, N*d matrix, where n is the number of particles and d is the dimension of x 
-%    -- y: particles from the target distribution, M*d matrix, where n is the number of
-%    particles and d is the dimension of x
+%    -- x_evi: particles, N*d matrix, where N is the number of particles and d is the dimension of x 
+%    -- y: particles from the target distribution, M*d matrix, where M is the number of
+%    particles and d is the dimension of y
 %    -- N: number of approximated particles
 %    -- M: number of particles from target distribution
 
