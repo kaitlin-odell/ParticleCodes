@@ -10,7 +10,7 @@ function [x_evi,jn] = trainer(env_name, n_particles,outer_iter)
 %    --x_evi: n*d matrix, approximated particles
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 d = 2; % dimension of problem
-tau = 1e-2; %time step for implicit 
+tau = 1e-2; %step for implicit euler 
 x0 = randn(n_particles,d);%Initialize x0 
 N = n_particles *d; %Total dimension of ODE system
 

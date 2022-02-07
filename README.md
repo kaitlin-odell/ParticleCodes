@@ -4,7 +4,7 @@ Codes for a particle based energetic variational inference with different target
 
 List of main files:
      demo.m: Main file to run different environments, iterations, and number of particles and will also plot the target distribution with approximated particles.
-  trainer.m: The outer loop of ParVI method to minimize particle approximations
+  trainer.m: The outer loop of ParVI method to minimize particle approximations, also includes a calculation of Jn at each iteration to ensure Thm 1 is met.
    evi_im.m: Energetic Variational Inference w/ Implicit Euler using gradient descent to calculate particle approximations
 KL_gradxy.m: Calculates the gradient of J_n(x)
 
@@ -25,6 +25,7 @@ demo.m (Within demo.m you can adjust the env_name, number_particles, and outer_i
 
 To run the metrics, use:
 
-mmd_plot.m (Within mmd_plot.m you can adjust the env_name, max number_particles, and max outer_iter as desired.)
-  L2norm.m (Within L2norm.m you can adjust the env_name, max number_particles, and max outer_iter as desired.)
+mmd_plot.m (Within mmd_plot.m you can adjust the env_name, sampling name i.e sample_star, sample_sine, sample_banana, and sample_doubbanana, max number_particles, and max outer_iter as desired.)
+  L2norm.m (Within L2norm.m you can adjust the env_name, sampling name i.e sample_star, sample_sine, sample_banana, and sample_doubbanana, max number_particles, and max outer_iter as desired.)
+
 
