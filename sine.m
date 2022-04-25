@@ -1,6 +1,6 @@
 function [logp, grad_logp,h] = sine(prior_var,y_var,x)
 [n,d] = size(x);
-h = .1;
+h = .05;
 x1 = x(:,1);
 x2 = x(:,2);
 

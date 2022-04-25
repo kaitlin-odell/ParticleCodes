@@ -1,6 +1,6 @@
 function [logp, grad_logp,h,Fx] = star(skewness, K, x)
 [n, d] = size(x);
-h = .0125;
+h = .1;
 
 theta = 2*pi/K;
 

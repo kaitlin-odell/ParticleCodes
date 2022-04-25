@@ -1,33 +1,37 @@
 clear;
 tic
-%Pick one toy environment to play
+%% Pick one toy environment to play
     %Different name corresponds to different V(x) in the Fokker-Plank equation
     %The definition of V(x) can be found in environment.py
 %env_name = 'double_banana';
-env_name = 'banana';
+%env_name = 'banana';
 %env_name = 'sine';
 %env_name = 'star';
 %env_name = 'wave';
+env_name = 'heat';
+%env_name = 'linearfp';
 
-n_particles = 10^2;  %number of particles (can be adjusted as desired)
-dim = 2;            %dimension of the problem
-outer_iter = 100;    %number of outer iterations (can be adjusted as desired)
+n_particles = 300;  %number of particles (can be adjusted as desired)
+tau = 1e-4;
+%tau = [1/2 1/4 1/8 1/16 1/32 1/64]; %step for implicit euler 
+outer_iter = 3/1e-4;
+%outer_iter = [4 7 13 25 49 97];    %number of outer iterations (can be adjusted as desired)
 
 
-%%calculates the approximated particles%%
-[x_evi] = trainer(env_name, n_particles, outer_iter);
+%% calculates the approximated particles%%
+[x_evi,err,fn,fne,jn] = trainer(env_name, n_particles, outer_iter, tau);
 toc
 
 
-%%%Plots the target distribution with the approximated particles
-%%Compute the un-normalized target distribution, only for the visualization
-ngrid = 500;
-%set the line space carefully to the region of your figure
-x = linspace(-5, 5, ngrid);  %region of x  For star: change to (-4, 4)
-y = linspace(-5, 5, ngrid);  %region of y  For star, change to (-4, 4)
-[X, Y] = meshgrid(x, y);
-XY = [reshape(X,[1,500^2]); reshape(Y,[1, 500^2])];
-
+%% Plots the target distribution with the approximated particles
+% Compute the un-normalized target distribution, only for the visualization
+% ngrid = 500;
+% %set the line space carefully to the region of your figure
+% x = linspace(-5, 5, ngrid);  %region of x  For star: change to (-4, 4)
+% y = linspace(-5, 5, ngrid);  %region of y  For star, change to (-4, 4)
+% [X, Y] = meshgrid(x, y);
+% XY = [reshape(X,[1,500^2]); reshape(Y,[1, 500^2])];
+% 
 % if strcmp(env_name,'star')
 %     logp = star(100, 5,XY');  %star gaussian mixture example
 % elseif strcmp(env_name, 'sine')
@@ -38,22 +42,22 @@ XY = [reshape(X,[1,500^2]); reshape(Y,[1, 500^2])];
 %     logp = banana(XY');
 % elseif strcmp(env_name,'wave')
 %     logp = wave(XY');
+% elseif strcmp(env_name,'heat')
+%     logp = heat(x,.5,1/4);
 % end
+% 
+% Z = exp(logp);
+% Z = reshape(Z,[500,500]);
+% 
+% % Plot the target distribution and evi particles %%
+% figure(1);
+% hold on
+% contourf(X,Y,Z)
+% scatter(x_evi(:,1),x_evi(:,2),'*r')
+% xlim([-5,5])
+% ylim([-5,5])
 
-Z = exp((-XY(1,:).^2 - XY(2,:).^2)/3);% + exp((-XY(1,:).^2 -(XY(2,:)+.5).^2));
-
-%Z = exp(logp);
-Z = reshape(Z, [500,500]);
-
-%%%Plot the target distribution and evi particles%%%
-figure(1);
-hold on
-contourf(X,Y,Z)
-scatter(x_evi(:,1),x_evi(:,2),'*r')
-xlim([-5,5])
-ylim([-5,5])
-
-%%%Plot theorem 1%%%
+%% Plot theorem 1 %%
 % figure(2);
 % plot(1:100,jn)
 % ylim([-6,0])

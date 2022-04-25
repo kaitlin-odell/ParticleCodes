@@ -7,15 +7,17 @@ env_name = 'double_banana';
 %env_name = 'star';
 %env_name = 'wave';
 
-n_particles = [4 16 64 256 1028 4112];  %number of particles (can be adjusted as desired)
-%n_particles = 256;
+%n_particles = [4 16 64 256 1028 4112];  %number of particles (can be adjusted as desired)
+n_particles = 1028;
 d = 2;            %dimension of the problem
 outer_iter = 100;    %number of outer iterations (can be adjusted as desired)
 
 %%Compute the target distribution
 %%For Star distribution
-%y = trainer(env_name, 8000, outer_iter);
-%int2 = sum(f(y(:,1),y(:,2)))/8000;
+%y = trainer(env_name, 6000, outer_iter);
+f = @(x,y) (0.3*x.^4 + 0.5*y.^4);
+%f = @(x,y) exp((-x.^2 - y.^2)/10);
+%int2 = sum(f(y(:,1),y(:,2)))/6000;
 
 
 %%For sine distribution
@@ -29,18 +31,18 @@ outer_iter = 100;    %number of outer iterations (can be adjusted as desired)
 %%For double banana distribution
 rho_star = @(x,y) exp(-2*((x^2 + y^2) -3)^2 + log(exp(-2*(x-2)^2) + exp(-2*(y+2)^2)));
 
-% f = @(x,y) exp((-x.^2 - y.^2)/10);
-f = @(x,y) 0.3*x.^4 + 0.5*y.^4;
+
+
 
 %Use Midpoint Method to estimate rho_star*f integral
 n = 2000; %number of subintervals in the x direction
 m = 2000; %number of subintervals in the y direction
-dx = (20)/n;
-dy = (20)/m;
+dx = (4)/n;
+dy = (4)/m;
 int2 = 0;
 for k = 1:n
     for j = 1:m
-        int2 = int2 + rho_star((-10 + k*dx)/2, (-10 + j*dy)/2)*f((-10 + k*dx)/2, (-10 + j*dy)/2)*dx*dy;
+        int2 = int2 + rho_star((-2 + k*dx)/2, (-2 + j*dy)/2)*f((-2 + k*dx)/2, (-2 + j*dy)/2)*dx*dy;
     end
 end
 
@@ -57,8 +59,8 @@ end
 % end
 
 
-int = zeros(6,1);
-for i = 1:6
+int = zeros(length(n_particles),1);
+for i = 1:length(n_particles)
     %%calculates the approximated particles%%
     x_evi = trainer(env_name, n_particles(i), outer_iter);
 
@@ -66,13 +68,13 @@ for i = 1:6
     int(i) = abs(sum(f(x_evi(:,1),x_evi(:,2))/n_particles(i)) - int2);
 end
 
-for i = 2:6
-    cov(i) = (int(i-1)/int(i));
-end
-
-t = table(n_particles', int, cov');
-
-plot(n_particles,int)
-xlim([0,4112])
-xlabel('Number of Particles')
-ylabel('\int_{\Omega} f(x)(\rho(x) - \rho_\ast(x)) dx')
+% for i = 2:length(n_particles)
+%     cov(i) = (int(i-1)/int(i));
+% end
+% 
+% t = table(n_particles', int, cov');
+% 
+% plot(n_particles,int)
+% xlim([0,n_particles(end)])
+% xlabel('Number of Particles')
+% ylabel('\int_{\Omega} f(x)(\rho(x) - \rho_\ast(x)) dx')

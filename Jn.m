@@ -1,4 +1,4 @@
-function jn = Jn(x1, x2, env_name,tau)
+function [jn,fn,jn1] = Jn(x1, x2,env_name,tau,t)
 [n,d] = size(x1);
 if strcmp(env_name,'star')
     [logp1, ~,h] = star(100, 5,x1);  %star gaussian mixture example  
@@ -10,6 +10,10 @@ elseif strcmp(env_name,'banana')
     [logp1, ~,h] = banana(x1);
 elseif strcmp(env_name,'wave')
     [logp1, ~,h] = wave(x1);
+elseif strcmp(env_name,'heat')
+    [logp1, ~ ,h] = heat(x1,t);
+elseif strcmp(env_name,'linearfp')
+    [logp1, ~,h] = linearfp(x1);
 end
 
 if strcmp(env_name,'star')
@@ -22,24 +26,30 @@ elseif strcmp(env_name,'banana')
     [logp2, ~,h] = banana(x2);
 elseif strcmp(env_name,'wave')
     [logp2, ~,h] = wave(x2);
+elseif strcmp(env_name,'heat')
+    [logp2, ~ ,h] = heat(x2,t-tau);
+elseif strcmp(env_name,'linearfp')
+    [logp2, ~,h] = linearfp(x2);
 end
 
 dif1 = reshape(x1,n,1,d) - reshape(x1,1,n,d);
-kxy1 = exp(-sum(dif1.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2))/n;
-sumkxy1 = sum(kxy1,2);
-Fx1 = (sum(log(sumkxy1)) - sum(logp1))/n;
+kxy1 = exp(-sum(dif1.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2));
+sumkxy1 = sum(kxy1,2)/n;
+Fx1 = (sum(log(sumkxy1)) - sum(logp1))/(n);
 
 dif2 = reshape(x2,n,1,d) - reshape(x2,1,n,d);
-kxy2 = exp(-sum(dif2.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2))/n;
-sumkxy2 = sum(kxy2,2);
-Fx2 = (sum(log(sumkxy2)) - sum(logp2))/n;
+kxy2 = exp(-sum(dif2.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2));
+sumkxy2 = sum(kxy2,2)/n;
+Fx2 = (sum(log(sumkxy2)) - sum(logp2))/(n);
 
 obj=0;
 for i = 1:n
-   obj = obj + (norm(x1(i,:)-x2(i,:),2)^2)/(2*tau);
+   obj = obj + norm(x1(i,:)-x2(i,:),2)^2/(2*tau*n);
 end
-obj = obj/n;
 
-jn = Fx1 - Fx2 + obj;
+jn = (Fx1-Fx2) + obj;
+
+fn = Fx1;
+jn1 = Fx1 + obj;
 
 end

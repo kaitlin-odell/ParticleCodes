@@ -22,46 +22,22 @@ elseif strcmp(env_name,'banana')
     [~, grad_logp,h] = banana(x);
 elseif strcmp(env_name,'wave')
     [~, grad_logp,h] = wave(x);
+elseif strcmp(env_name,'heat')
+    [~, grad_logp,h] = heat(x,0);
+elseif strcmp(env_name,'linearfp')
+    [~, grad_logp,h] = linearfp(x);
 end
 
 %%%%%%%%%%%%%% Main part %%%%%%%%%%
 dif = reshape(x,n,1,d) - reshape(x,1,n,d);
 
 kxy = exp(-sum(dif.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2));
-kh = kxy/h^2;
 sumkxy = sum(kxy,2);
 
-gradK = -dif.*(kxy/h^2);
+gradK = -dif.*kxy/(h^2);
 
 dxkxy = squeeze(sum(gradK,2));
 
-khs = kh./sumkxy;
-obj1 = khs*x - sum(khs,2).*x;
-obj2 = dxkxy./sumkxy;
-
-Akxy = (x - x_init)/tau + obj2 + obj1  - grad_logp;  %  %Grad of J_n(x)
-
-% dif = zeros([n,n,d]);
-% for i = 1:n
-%     for j = 1:n
-%         for k = 1:d
-%             dif(i,j,k) = x(i,k) - x(j,k);
-%         end
-%     end
-% end
-% 
-% kxy = exp(-sum(dif.^2, 3)/(2*h^2))/((2*pi*h^2)^(d/2));
-% sumkxy = sum(kxy,2);
-% gradK = zeros([n,n,d]);
-% for i = 1:n
-%     for j = 1:n
-%         for k = 1:d
-%             gradK(i,j,k) = -dif(i,j,k)*kxy(i, j)/h^2;
-%         end
-%     end
-% end
-% 
-% dxkxy = squeeze(sum(gradK,2));
 % a = zeros([n,n,d]);
 % for i =1:n
 %     for j = 1:n
@@ -71,7 +47,8 @@ Akxy = (x - x_init)/tau + obj2 + obj1  - grad_logp;  %  %Grad of J_n(x)
 %     end
 % end
 % obj1 = squeeze(sum(a, 2));
-% obj2 = dxkxy./sumkxy;
-% 
-% Akxy = (x - x_init)/tau + obj2 + obj1  - grad_logp;  % - (-obj2 - obj1 - grad_logp'); %Grad of J_n(x)
+obj1 = squeeze(sum(gradK./sumkxy,1));
+obj2 = dxkxy./sumkxy;
+
+Akxy = (x - x_init)/tau + obj2 - obj1'  - grad_logp;  %Grad of J_n(x)
 end
