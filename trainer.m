@@ -17,8 +17,6 @@ d = 2; % dimension of problem
 t = 1/4; % start time of the algorithm
 h = 0.653; 
 N = n_particles*d; %Total dimension of ODE system
-%tplot = [5000, 10000, 15000, 20000, 25000, 30000];
-%tplot = 1e9;
 %x0 = randn(n_particles,d);
 
 %% Initializes particles via initially equally weighted from grad descent paper%%
@@ -35,25 +33,7 @@ x0 = XY';
 n_particles = size(x0,1);
 
 %% Plot IC
-% rho = @(x) arrayfun(@(z1,z2) (exp(-norm(x - [z1,z2],2)^2/(2*h^2))/((2*pi*h^2)^(d/2))),x0(:,1),x0(:,2));
-% x = linspace(-10,10,500);
-% [X,Y] = meshgrid(x,x);
-% XY = [reshape(X,[1,(500)^2]); reshape(Y,[1, (500)^2])]';
-% rho_x = zeros(500^2,1); % numerical solution
-% for j = 1:500^2
-%     rho_x(j) = sum(rho(XY(j,:)))/n_particles;
-% end
-% [~,~,~,rho_star] = heat(XY,t); % Exact solution
-% % % Reshape for plotting
-% rho_x = reshape(rho_x, [500,500]);
-% rho_star = reshape(rho_star,[500,500]);
-% hold on;
-% figure(1)
-% contourf(X,Y,rho_star)
-% figure(2)
-% hold on;
-% contourf(X,Y,rho_x)
-% scatter(x0(:,1),x0(:,2),'*r')
+% plotRhoInitial(h,d,x0)
 
 
 %% Outer Time loop for particle updates
@@ -68,16 +48,10 @@ for i = 1:outer_iter
     
     %% Plots the last approximate and exact sol at the end time
     if i==outer_iter
+        % Numerical solution as d increases need to increase z1,z2..etc
         rho = @(x) arrayfun(@(z1,z2) (exp(-norm(x - [z1,z2],2)^2/(2*h^2))/((2*pi*h^2)^(d/2))),x_evi(:,1),x_evi(:,2));
-%         rho1 = @(x) exp(-norm(x - x_evi(1,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(2,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(3,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(4,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(5,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(6,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(7,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(8,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2)) ...
-%             + exp(-norm(x - x_evi(9,:),2)^2/(2*h^2))/((2*pi*h^2)^(d/2));
+
+        % Evaluate rho at points on a grid to find numerical solution
         x = linspace(-10,10,500);
         [X,Y] = meshgrid(x,x);
         XY = [reshape(X,[1,(500)^2]); reshape(Y,[1, (500)^2])]';
@@ -86,43 +60,16 @@ for i = 1:outer_iter
             rho_x(j) = sum(rho(XY(j,:)))/n_particles;
         end
 
+        %Calculate true solution for plot reference plotting
         [~,~,~,rho_star] = heat(XY,t);
         
         % Reshape for plotting
         rho_x = reshape(rho_x, [500,500]);
         rho_star = reshape(rho_star,[500,500]);
+        plotRho(X,Y,rho_star,rho_x)
         
-%         int1 = 0;
-%         int2 = 0;
-%         for j =1:(1000^2-1)
-%             int1 = int1 + (abs(rho_x(j)+rho_x(j+1))/2)*(XY(j+1,1)-XY(j,1))*(XY(j+1,2)-XY(j,2));
-%             int2 = int2 + (abs(rho_star(j)+rho_star(j+1))/2)*(XY(j+1,1)-XY(j,1))*(XY(j+1,2)-XY(j,2));
-%         end
-%         err = abs(int1-int2)/int2;
-        err = 0;
-
-        hold on;
-        figure(3)
-        contourf(X,Y,rho_star)
-        figure(4)
-        hold on;
-        contourf(X,Y,rho_x)
-        scatter(x_evi(:,1),x_evi(:,2),'*r')
-        figure(5);
-        plot3(X,Y,rho_star)
-        xlabel('x')
-        ylabel('y')
-        zlabel('solution')
-        figure(6);
-        plot3(X,Y,rho_x)
-        xlabel('x')
-        ylabel('y')
-        zlabel('solution')
-%         plot3(x(:,1),x(:,2),rho_star,'k-')
-%         plot3(x(:,1),x(:,2),rho_x,'r--')
-%         tp = (ones(10000,1)*t)-(1/4);
-%         plot3(x', tp, rho_star, 'r-')
-%         plot3(x', tp, rho_x, 'b--')
+        % Calculate numerical error
+        err = rhoError(XY,rho_x);
         
    end
     x0 = x_evi;
