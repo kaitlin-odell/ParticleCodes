@@ -1,6 +1,6 @@
-function int = exactfh(t)
+function int = exactfh(T,d)
 
-rho = @(x) exp(-x.^2/(4*t))./sqrt(4*pi*t); %%This is exact solution for heat equation
+rho = @(x,y,T,d) exp((-x.^2-y.^2)/(4*T))./((4*pi*T)^(d/2)); %%This is exact solution
 
 x = linspace(-100,100,10000);
 

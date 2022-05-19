@@ -50,5 +50,5 @@ dxkxy = squeeze(sum(gradK,2));
 obj1 = squeeze(sum(gradK./sumkxy,1));
 obj2 = dxkxy./sumkxy;
 
-Akxy = (x - x_init)/tau + obj2 - obj1'  - grad_logp;  %Grad of J_n(x)
+Akxy = (x - x_init)/tau + obj2 - obj1  - grad_logp;  %Grad of J_n(x)
 end
