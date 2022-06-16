@@ -11,15 +11,20 @@ tic
 env_name = 'heat';
 %env_name = 'linearfp';
 
-n_particles = round(sqrt(256),0);  %number of particles (can be adjusted as desired)
+n_particles = 64;  %number of particles (can be adjusted as desired)
+%n_particles = [16 32 64 128 256 512];
+%n_particles = [4 floor(sqrt(32)) floor(sqrt(64)) floor(sqrt(128)) floor(sqrt(256)) floor(sqrt(512))]; 
 tau = 1e-2;
 %tau = [1e-1 1e-2 1e-3 1e-4 1e-5 1e-6]; %step for implicit euler 
-outer_iter = 10/1e-2;
+outer_iter = 2/1e-2;
 %outer_iter = [4 7 13 25 49 97];    %number of outer iterations (can be adjusted as desired)
 
 
 %% calculates the approximated particles%%
-[x_evi, err, rho_star, rho_x] = trainer(env_name, n_particles, outer_iter, tau);
+for i = 1:length(n_particles)
+    [x_evi, rho_star, rho_x] = trainer(env_name, n_particles(i), outer_iter, tau);
+end
+
 toc
 
 

@@ -1,4 +1,4 @@
-function [x_evi, err, rho_star, rho_x, fn,jn,fne] = trainer(env_name, n_particles,outer_iter,tau)
+function [x_evi, rho_star, rho_x] = trainer(env_name, n_particles,outer_iter,tau)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Sample code to reproduce our distribution particle results
 % Input:
@@ -15,22 +15,23 @@ function [x_evi, err, rho_star, rho_x, fn,jn,fne] = trainer(env_name, n_particle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 d = 2; % dimension of problem
 t = 1/4; % start time of the algorithm
-h = 0.653; 
+h = 0.66; 
 N = n_particles*d; %Total dimension of ODE system
-%x0 = randn(n_particles,d);
+rng(1);
+x0 = randn(n_particles,d);
 
 %% Initializes particles via initially equally weighted from grad descent paper%%
-x0 = zeros(n_particles,1);
-for i = -(n_particles/2):(n_particles/2)
-    x0(i+(n_particles/2)+1) = erfinv((2*i-1)/(2*n_particles));
-end
-
-[X,Y] = meshgrid(x0,x0);
-XY = [reshape(X,[1,(n_particles+1)^2]); reshape(Y,[1, (n_particles+1)^2])];
-
-x0 = XY';
-
-n_particles = size(x0,1);
+% x0 = zeros(n_particles,1);
+% for i = -(n_particles/2):(n_particles/2)
+%     x0(i+(n_particles/2)+1) = erfinv((2*i-1)/(2*n_particles));
+% end
+% 
+% if d ==2 
+%     [X,Y] = meshgrid(x0,x0);
+%     XY = [reshape(X,[1,(n_particles+1)^2]); reshape(Y,[1, (n_particles+1)^2])];
+%     x0 = XY';
+%     n_particles = size(x0,1);
+% end
 
 %% Plot IC
 % plotRhoInitial(h,d,x0)
@@ -48,29 +49,61 @@ for i = 1:outer_iter
     
     %% Plots the last approximate and exact sol at the end time
     if i==outer_iter
-        % Numerical solution as d increases need to increase z1,z2..etc
-        rho = @(x) arrayfun(@(z1,z2) (exp(-norm(x - [z1,z2],2)^2/(2*h^2))/((2*pi*h^2)^(d/2))),x_evi(:,1),x_evi(:,2));
-
+        % Numerical solution
+        rho = reconstructRho(x_evi,h);
+        
         % Evaluate rho at points on a grid to find numerical solution
-        x = linspace(-10,10,500);
-        [X,Y] = meshgrid(x,x);
-        XY = [reshape(X,[1,(500)^2]); reshape(Y,[1, (500)^2])]';
-        rho_x = zeros(500^2,1);
-        for j = 1:500^2
-            rho_x(j) = sum(rho(XY(j,:)))/n_particles;
-        end
+        x = linspace(-10,10,1000)';
+        dx = (20)/1000;
+        if d == 1
+            rho_x = zeros(1000,1);
+            for j = 1:1000
+                rho_x(j) = sum(rho(x(j)))/n_particles;
+            end
+            %Calculate true solution for plot reference plotting
+            [~,~,~,rho_star] = heat(x,t);
 
-        %Calculate true solution for plot reference plotting
-        [~,~,~,rho_star] = heat(XY,t);
-        
-        % Reshape for plotting
-        rho_x = reshape(rho_x, [500,500]);
-        rho_star = reshape(rho_star,[500,500]);
-        plotRho(X,Y,rho_star,rho_x)
-        
-        % Calculate numerical error
-        err = rhoError(XY,rho_x);
-        
+            % Calculate numerical error
+            %err = rhoError(x,dx,rho_x,rho_star);
+
+            %%% Plot Solution  
+            %plotRho(x,rho_star,rho_x,x_evi)
+
+            %Plot contours at y=-1,0,1
+%            plotContours(X,rho_x)
+% 
+%             if n_particles == 4225
+%                 plotContours(X,rho_star)
+%             end
+            
+        elseif d == 2
+          
+            [X,Y] = meshgrid(x,x);
+            XY = [reshape(X,[1,(1000)^2]); reshape(Y,[1, (1000)^2])]';
+            rho_x = zeros(1000^2,1);
+            for j = 1:1000^2
+                rho_x(j) = sum(rho(XY(j,:)))/n_particles;
+            end
+
+            %Calculate true solution for plot reference plotting
+            [~,~,~,rho_star] = heat(XY,t);
+
+            % Calculate numerical error
+    %         err = rhoError(XY,dx,rho_x,rho_star);
+    %         
+    %         % Reshape for plotting
+    %         rho_x = reshape(rho_x, [1000,1000]);
+    %         rho_star = reshape(rho_star,[1000,1000]);
+    %         plotRho2D(X,Y,rho_star,rho_x,x_evi)
+
+            %Plot contours at y=-1,0,1
+            rho_x = reshape(rho_x, [1000,1000]);
+            plotContours(X,rho_x)
+
+            if n_particles == 529
+                plotContours(X,rho_star)
+            end
+        end
    end
     x0 = x_evi;
 end
